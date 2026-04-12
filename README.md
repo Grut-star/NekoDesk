@@ -47,6 +47,11 @@ Universal proxy toolchain, empowered by sing-box.
 
 **How does NekoDesk differ from the original NekoBox?** <br/>
 NekoDesk is an independent fork of NekoBox. This project was created to match my own vision of the project's development. In particular, the inclusion of a number of additional functions and the closing of a number of vulnerabilities that many consider minor and/or the correct operation of the application.
+**What different features:<br/>
+-*Physical networks are strictly hidden from filtered applications (this may affect WebRTC; testing is required).
+-*Support for application-based filtering has been added (in VPN/Proxy modes).
+-*The local port is now opened ONLY if we are not in VPN mode or the user has EXPLICITLY specified its use in the application.
+-*Added a kill switch via the default setBlocking(true)
 
 ## Credits
 
