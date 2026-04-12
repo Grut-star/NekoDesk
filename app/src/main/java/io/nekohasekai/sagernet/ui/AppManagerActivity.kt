@@ -44,7 +44,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
-import moe.matsuri.nb4a.utils.NGUtil
+import com.moe.nd4a.app.utils.NGUtil
 import kotlin.coroutines.coroutineContext
 
 class AppManagerActivity : ThemedActivity() {

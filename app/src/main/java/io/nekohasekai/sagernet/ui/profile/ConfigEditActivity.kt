@@ -26,7 +26,7 @@ import io.nekohasekai.sagernet.ktx.readableMessage
 import io.nekohasekai.sagernet.ktx.toStringPretty
 import io.nekohasekai.sagernet.ui.ThemedActivity
 import io.nekohasekai.sagernet.widget.ListListener
-import moe.matsuri.nb4a.ui.ExtendedKeyboard
+import com.moe.nd4a.app.ui.ExtendedKeyboard
 import org.json.JSONObject
 
 class ConfigEditActivity : ThemedActivity() {

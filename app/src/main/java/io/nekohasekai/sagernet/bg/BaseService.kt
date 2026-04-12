@@ -22,8 +22,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import libcore.Libcore
-import moe.matsuri.nb4a.Protocols
-import moe.matsuri.nb4a.utils.Util
+import com.moe.nd4a.app.Protocols
+import com.moe.nd4a.app.utils.Util
 import java.net.UnknownHostException
 
 class BaseService {

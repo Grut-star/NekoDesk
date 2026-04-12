@@ -7,9 +7,9 @@ import io.nekohasekai.sagernet.R
 import io.nekohasekai.sagernet.database.DataStore
 import io.nekohasekai.sagernet.database.preference.EditTextPreferenceModifiers
 import io.nekohasekai.sagernet.fmt.shadowsocks.ShadowsocksBean
-import moe.matsuri.nb4a.proxy.PreferenceBinding
-import moe.matsuri.nb4a.proxy.PreferenceBindingManager
-import moe.matsuri.nb4a.proxy.Type
+import com.moe.nd4a.app.proxy.PreferenceBinding
+import com.moe.nd4a.app.proxy.PreferenceBindingManager
+import com.moe.nd4a.app.proxy.Type
 
 class ShadowsocksSettingsActivity : ProfileSettingsActivity<ShadowsocksBean>() {
 

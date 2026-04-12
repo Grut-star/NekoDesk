@@ -48,7 +48,7 @@ import io.nekohasekai.sagernet.ktx.onMainDispatcher
 import io.nekohasekai.sagernet.ktx.parseProxies
 import io.nekohasekai.sagernet.ktx.readableMessage
 import io.nekohasekai.sagernet.ktx.runOnDefaultDispatcher
-import moe.matsuri.nb4a.utils.Util
+import com.moe.nd4a.app.utils.Util
 
 class MainActivity : ThemedActivity(),
     SagerConnection.Callback,
@@ -270,7 +270,7 @@ class MainActivity : ThemedActivity(),
             }
             .setNeutralButton(android.R.string.cancel, null)
             .setNeutralButton(R.string.action_learn_more) { _, _ ->
-                launchCustomTab("https://matsuridayo.github.io/nb4a-plugin/")
+                launchCustomTab("https://matsuridayo.github.io/ND4A-plugin/")
             }
             .show()
     }

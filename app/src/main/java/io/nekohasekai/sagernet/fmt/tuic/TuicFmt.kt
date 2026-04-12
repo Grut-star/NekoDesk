@@ -4,8 +4,8 @@ import io.nekohasekai.sagernet.database.DataStore
 import io.nekohasekai.sagernet.ktx.linkBuilder
 import io.nekohasekai.sagernet.ktx.toLink
 import io.nekohasekai.sagernet.ktx.urlSafe
-import moe.matsuri.nb4a.SingBoxOptions
-import moe.matsuri.nb4a.utils.listByLineOrComma
+import com.moe.nd4a.app.SingBoxOptions
+import com.moe.nd4a.app.utils.listByLineOrComma
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 fun parseTuic(url: String): TuicBean {

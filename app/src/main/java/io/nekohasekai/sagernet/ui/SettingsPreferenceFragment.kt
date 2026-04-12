@@ -16,7 +16,7 @@ import io.nekohasekai.sagernet.database.DataStore
 import io.nekohasekai.sagernet.database.preference.EditTextPreferenceModifiers
 import io.nekohasekai.sagernet.ktx.*
 import io.nekohasekai.sagernet.utils.Theme
-import moe.matsuri.nb4a.ui.*
+import com.moe.nd4a.app.ui.*
 
 class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 

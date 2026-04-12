@@ -6,7 +6,7 @@ import io.nekohasekai.sagernet.R
 import io.nekohasekai.sagernet.SagerNet
 import io.nekohasekai.sagernet.bg.BaseService
 import io.nekohasekai.sagernet.ktx.Logs
-import moe.matsuri.nb4a.plugin.Plugins
+import com.moe.nd4a.app.plugin.Plugins
 import java.io.File
 import java.io.FileNotFoundException
 

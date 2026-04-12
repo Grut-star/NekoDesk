@@ -39,7 +39,7 @@ import io.nekohasekai.sagernet.widget.AppListPreference
 import io.nekohasekai.sagernet.widget.ListListener
 import io.nekohasekai.sagernet.widget.OutboundPreference
 import kotlinx.parcelize.Parcelize
-import moe.matsuri.nb4a.ui.EditConfigPreference
+import com.moe.nd4a.app.ui.EditConfigPreference
 
 @Suppress("UNCHECKED_CAST")
 class RouteSettingsActivity(

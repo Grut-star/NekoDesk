@@ -28,10 +28,10 @@ import io.nekohasekai.sagernet.utils.*
 import kotlinx.coroutines.DEBUG_PROPERTY_NAME
 import kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON
 import libcore.Libcore
-import moe.matsuri.nb4a.NativeInterface
-import moe.matsuri.nb4a.net.LocalResolverImpl
-import moe.matsuri.nb4a.utils.JavaUtil
-import moe.matsuri.nb4a.utils.cleanWebview
+import com.moe.nd4a.app.NativeInterface
+import com.moe.nd4a.app.net.LocalResolverImpl
+import com.moe.nd4a.app.utils.JavaUtil
+import com.moe.nd4a.app.utils.cleanWebview
 import java.io.File
 import androidx.work.Configuration as WorkConfiguration
 

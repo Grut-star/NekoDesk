@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import io.nekohasekai.sagernet.R
 import io.nekohasekai.sagernet.database.DataStore
 import io.nekohasekai.sagernet.database.ProfileManager
-import moe.matsuri.nb4a.ui.SimpleMenuPreference
+import com.moe.nd4a.app.ui.SimpleMenuPreference
 
 class OutboundPreference
 @JvmOverloads constructor(

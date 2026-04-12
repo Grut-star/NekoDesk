@@ -91,7 +91,7 @@ class VpnService : BaseVpnService(),
 //        Logs.d(tunPlatformOptionsJson)
 //        val tunOptions = JSONObject(tunOptionsJson)
 
-        // address & route & MTU ...... use NB4A GUI config
+        // address & route & MTU ...... use ND4A GUI config
         val builder = Builder().setConfigureIntent(SagerNet.configureIntent(this))
             .setSession(getString(R.string.app_name))
             .setMtu(DataStore.mtu)

@@ -13,7 +13,7 @@ import io.nekohasekai.sagernet.BuildConfig
 import io.nekohasekai.sagernet.R
 import io.nekohasekai.sagernet.database.DataStore
 import io.nekohasekai.sagernet.databinding.LayoutWebviewBinding
-import moe.matsuri.nb4a.utils.WebViewUtil
+import com.moe.nd4a.app.utils.WebViewUtil
 
 // Fragment必须有一个无参public的构造函数，否则在数据恢复的时候，会报crash
 

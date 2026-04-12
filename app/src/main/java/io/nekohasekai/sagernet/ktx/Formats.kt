@@ -14,9 +14,9 @@ import io.nekohasekai.sagernet.fmt.trojan.parseTrojan
 import io.nekohasekai.sagernet.fmt.tuic.parseTuic
 import io.nekohasekai.sagernet.fmt.trojan_go.parseTrojanGo
 import io.nekohasekai.sagernet.fmt.v2ray.parseV2Ray
-import moe.matsuri.nb4a.proxy.anytls.parseAnytls
-import moe.matsuri.nb4a.utils.JavaUtil.gson
-import moe.matsuri.nb4a.utils.Util
+import com.moe.nd4a.app.proxy.anytls.parseAnytls
+import com.moe.nd4a.app.utils.JavaUtil.gson
+import com.moe.nd4a.app.utils.Util
 import okhttp3.HttpUrl
 import org.json.JSONArray
 import org.json.JSONException

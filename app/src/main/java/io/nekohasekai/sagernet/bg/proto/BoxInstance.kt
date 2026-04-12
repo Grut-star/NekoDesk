@@ -21,7 +21,7 @@ import io.nekohasekai.sagernet.plugin.PluginManager
 import kotlinx.coroutines.*
 import libcore.BoxInstance
 import libcore.Libcore
-import moe.matsuri.nb4a.net.LocalResolverImpl
+import com.moe.nd4a.app.net.LocalResolverImpl
 import java.io.File
 
 abstract class BoxInstance(

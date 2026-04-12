@@ -18,7 +18,7 @@ private lateinit var localProperties: Properties
 fun Project.requireMetadata(): Properties {
     if (!::metadata.isInitialized) {
         metadata = Properties().apply {
-            load(rootProject.file("nb4a.properties").inputStream())
+            load(rootProject.file("nd4a.properties").inputStream())
         }
     }
     return metadata

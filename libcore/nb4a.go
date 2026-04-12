@@ -35,13 +35,13 @@ func ForceGc() {
 
 func InitCore(process, cachePath, internalAssets, externalAssets string,
 	maxLogSizeKb int32, logEnable bool,
-	if1 NB4AInterface, if2 BoxPlatformInterface, if3 LocalDNSTransport,
+	if1 ND4AInterface, if2 BoxPlatformInterface, if3 LocalDNSTransport,
 ) {
 	defer device.DeferPanicToError("InitCore", func(err error) { log.Println(err) })
 	isBgProcess = strings.HasSuffix(process, ":bg")
 
 	neko_common.RunMode = neko_common.RunMode_NekoBoxForAndroid
-	intfNB4A = if1
+	intfND4A = if1
 	intfBox = if2
 	useProcfs = intfBox.UseProcFS()
 	gLocalDNSTransport = newPlatformTransport(if3, "", option.LocalDNSServerOptions{})
@@ -65,7 +65,7 @@ func InitCore(process, cachePath, internalAssets, externalAssets string,
 	neko_log.SetupLog(int(maxLogSizeKb)*1024, filepath.Join(cachePath, "neko.log"))
 
 	// nekoutils
-	nekoutils.Selector_OnProxySelected = intfNB4A.Selector_OnProxySelected
+	nekoutils.Selector_OnProxySelected = intfND4A.Selector_OnProxySelected
 
 	// Set up some component
 	go func() {

@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 import io.nekohasekai.sagernet.ktx.NetsKt;
-import moe.matsuri.nb4a.utils.JavaUtil;
+import com.moe.nd4a.app.utils.JavaUtil;
 
 public abstract class AbstractBean extends Serializable {
 

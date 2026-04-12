@@ -25,7 +25,7 @@ import io.nekohasekai.sagernet.databinding.LayoutImportBinding
 import io.nekohasekai.sagernet.databinding.LayoutProgressBinding
 import io.nekohasekai.sagernet.ktx.*
 import kotlinx.coroutines.delay
-import moe.matsuri.nb4a.utils.Util
+import com.moe.nd4a.app.utils.Util
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File

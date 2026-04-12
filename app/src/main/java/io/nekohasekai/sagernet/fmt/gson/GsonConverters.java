@@ -8,7 +8,7 @@ import java.util.Set;
 
 import kotlin.collections.CollectionsKt;
 import kotlin.collections.SetsKt;
-import moe.matsuri.nb4a.utils.JavaUtil;
+import com.moe.nd4a.app.utils.JavaUtil;
 
 public class GsonConverters {
 

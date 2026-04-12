@@ -6,7 +6,7 @@
         app:title="@string/group_name"
         app:useSimpleSummaryProvider="true" />
 
-    <moe.matsuri.nb4a.ui.SimpleMenuPreference
+    <com.moe.nd4a.app.ui.SimpleMenuPreference
         app:defaultValue="0"
         app:entries="@array/group_types"
         app:entryValues="@array/int_array_2"
@@ -15,7 +15,7 @@
         app:title="@string/group_type"
         app:useSimpleSummaryProvider="true" />
 
-    <moe.matsuri.nb4a.ui.SimpleMenuPreference
+    <com.moe.nd4a.app.ui.SimpleMenuPreference
         app:defaultValue="0"
         app:entries="@array/group_orders"
         app:entryValues="@array/int_array_3"

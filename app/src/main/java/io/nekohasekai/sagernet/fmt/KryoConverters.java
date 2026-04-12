@@ -16,8 +16,8 @@ import io.nekohasekai.sagernet.fmt.internal.ChainBean;
 import io.nekohasekai.sagernet.fmt.mieru.MieruBean;
 import io.nekohasekai.sagernet.fmt.naive.NaiveBean;
 import io.nekohasekai.sagernet.fmt.shadowsocks.ShadowsocksBean;
-import moe.matsuri.nb4a.proxy.anytls.AnyTLSBean;
-import moe.matsuri.nb4a.proxy.shadowtls.ShadowTLSBean;
+import com.moe.nd4a.app.proxy.anytls.AnyTLSBean;
+import com.moe.nd4a.app.proxy.shadowtls.ShadowTLSBean;
 import io.nekohasekai.sagernet.fmt.socks.SOCKSBean;
 import io.nekohasekai.sagernet.fmt.ssh.SSHBean;
 import io.nekohasekai.sagernet.fmt.trojan.TrojanBean;
@@ -27,9 +27,9 @@ import io.nekohasekai.sagernet.fmt.v2ray.VMessBean;
 import io.nekohasekai.sagernet.fmt.wireguard.WireGuardBean;
 import io.nekohasekai.sagernet.ktx.KryosKt;
 import io.nekohasekai.sagernet.ktx.Logs;
-import moe.matsuri.nb4a.proxy.config.ConfigBean;
-import moe.matsuri.nb4a.proxy.neko.NekoBean;
-import moe.matsuri.nb4a.utils.JavaUtil;
+import com.moe.nd4a.app.proxy.config.ConfigBean;
+import com.moe.nd4a.app.proxy.neko.NekoBean;
+import com.moe.nd4a.app.utils.JavaUtil;
 
 public class KryoConverters {
 

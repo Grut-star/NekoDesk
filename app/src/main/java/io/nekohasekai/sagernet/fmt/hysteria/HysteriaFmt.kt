@@ -3,8 +3,8 @@ package io.nekohasekai.sagernet.fmt.hysteria
 import io.nekohasekai.sagernet.database.DataStore
 import io.nekohasekai.sagernet.fmt.LOCALHOST
 import io.nekohasekai.sagernet.ktx.*
-import moe.matsuri.nb4a.SingBoxOptions
-import moe.matsuri.nb4a.utils.listByLineOrComma
+import com.moe.nd4a.app.SingBoxOptions
+import com.moe.nd4a.app.utils.listByLineOrComma
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.json.JSONObject
 import java.io.File

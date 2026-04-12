@@ -28,12 +28,12 @@ import io.nekohasekai.sagernet.plugin.PluginManager.loadString
 import io.nekohasekai.sagernet.utils.PackageCache
 import io.nekohasekai.sagernet.widget.ListListener
 import libcore.Libcore
-import moe.matsuri.nb4a.plugin.Plugins
+import com.moe.nd4a.app.plugin.Plugins
 import androidx.core.net.toUri
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.nekohasekai.sagernet.SagerNet
 import io.nekohasekai.sagernet.database.DataStore
-import moe.matsuri.nb4a.utils.Util
+import com.moe.nd4a.app.utils.Util
 import org.json.JSONObject
 
 class AboutFragment : ToolbarFragment(R.layout.layout_about) {

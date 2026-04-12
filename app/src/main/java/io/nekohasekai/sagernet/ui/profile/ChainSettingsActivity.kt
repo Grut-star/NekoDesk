@@ -27,7 +27,7 @@ import io.nekohasekai.sagernet.databinding.LayoutProfileBinding
 import io.nekohasekai.sagernet.fmt.internal.ChainBean
 import io.nekohasekai.sagernet.ktx.*
 import io.nekohasekai.sagernet.ui.ProfileSelectActivity
-import moe.matsuri.nb4a.Protocols.getProtocolColor
+import com.moe.nd4a.app.Protocols.getProtocolColor
 
 class ChainSettingsActivity : ProfileSettingsActivity<ChainBean>(R.layout.layout_chain_settings) {
 

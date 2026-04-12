@@ -4,7 +4,7 @@ package io.nekohasekai.sagernet.ktx
 
 import io.nekohasekai.sagernet.BuildConfig
 import io.nekohasekai.sagernet.fmt.AbstractBean
-import moe.matsuri.nb4a.utils.NGUtil
+import com.moe.nd4a.app.utils.NGUtil
 import okhttp3.HttpUrl
 import java.net.InetSocketAddress
 import java.net.Socket

@@ -20,10 +20,10 @@ import io.nekohasekai.sagernet.fmt.v2ray.setTLS
 import io.nekohasekai.sagernet.fmt.wireguard.WireGuardBean
 import io.nekohasekai.sagernet.ktx.*
 import libcore.Libcore
-import moe.matsuri.nb4a.Protocols
-import moe.matsuri.nb4a.proxy.anytls.AnyTLSBean
-import moe.matsuri.nb4a.proxy.config.ConfigBean
-import moe.matsuri.nb4a.utils.Util
+import com.moe.nd4a.app.Protocols
+import com.moe.nd4a.app.proxy.anytls.AnyTLSBean
+import com.moe.nd4a.app.proxy.config.ConfigBean
+import com.moe.nd4a.app.utils.Util
 import org.ini4j.Ini
 import org.json.JSONArray
 import org.json.JSONObject

@@ -18,7 +18,7 @@ import io.nekohasekai.sagernet.databinding.LayoutLogcatBinding
 import io.nekohasekai.sagernet.ktx.*
 import io.nekohasekai.sagernet.widget.ListListener
 import libcore.Libcore
-import moe.matsuri.nb4a.utils.SendLog
+import com.moe.nd4a.app.utils.SendLog
 
 class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
     Toolbar.OnMenuItemClickListener {
@@ -105,7 +105,7 @@ class LogcatFragment : ToolbarFragment(R.layout.layout_logcat),
             R.id.action_send_logcat -> {
                 val context = requireContext()
                 runOnDefaultDispatcher {
-                    SendLog.sendLog(context, "NB4A")
+                    SendLog.sendLog(context, "ND4A")
                 }
             }
 

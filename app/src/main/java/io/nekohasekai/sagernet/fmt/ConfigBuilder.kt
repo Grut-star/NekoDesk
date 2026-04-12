@@ -26,17 +26,17 @@ import io.nekohasekai.sagernet.fmt.wireguard.buildSingBoxOutboundWireguardBean
 import io.nekohasekai.sagernet.ktx.isIpAddress
 import io.nekohasekai.sagernet.ktx.mkPort
 import io.nekohasekai.sagernet.utils.PackageCache
-import moe.matsuri.nb4a.*
-import moe.matsuri.nb4a.SingBoxOptions.*
-import moe.matsuri.nb4a.plugin.Plugins
-import moe.matsuri.nb4a.proxy.anytls.AnyTLSBean
-import moe.matsuri.nb4a.proxy.anytls.buildSingBoxOutboundAnyTLSBean
-import moe.matsuri.nb4a.proxy.config.ConfigBean
-import moe.matsuri.nb4a.proxy.shadowtls.ShadowTLSBean
-import moe.matsuri.nb4a.proxy.shadowtls.buildSingBoxOutboundShadowTLSBean
-import moe.matsuri.nb4a.utils.JavaUtil.gson
-import moe.matsuri.nb4a.utils.Util
-import moe.matsuri.nb4a.utils.listByLineOrComma
+import com.moe.nd4a.app.*
+import com.moe.nd4a.app.SingBoxOptions.*
+import com.moe.nd4a.app.plugin.Plugins
+import com.moe.nd4a.app.proxy.anytls.AnyTLSBean
+import com.moe.nd4a.app.proxy.anytls.buildSingBoxOutboundAnyTLSBean
+import com.moe.nd4a.app.proxy.config.ConfigBean
+import com.moe.nd4a.app.proxy.shadowtls.ShadowTLSBean
+import com.moe.nd4a.app.proxy.shadowtls.buildSingBoxOutboundShadowTLSBean
+import com.moe.nd4a.app.utils.JavaUtil.gson
+import com.moe.nd4a.app.utils.Util
+import com.moe.nd4a.app.utils.listByLineOrComma
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 const val TAG_MIXED = "mixed-in"

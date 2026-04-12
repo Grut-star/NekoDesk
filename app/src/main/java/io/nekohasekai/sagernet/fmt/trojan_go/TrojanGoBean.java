@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import io.nekohasekai.sagernet.fmt.AbstractBean;
 import io.nekohasekai.sagernet.fmt.KryoConverters;
-import moe.matsuri.nb4a.utils.JavaUtil;
+import com.moe.nd4a.app.utils.JavaUtil;
 
 public class TrojanGoBean extends AbstractBean {
 
@@ -82,7 +82,7 @@ public class TrojanGoBean extends AbstractBean {
      * 额外的插件选项。本字段保留。
      * 可省略，但不可以为空字符串。
      */
-    // not used in NB4A
+    // not used in ND4A
     public String plugin;
 
     // ---

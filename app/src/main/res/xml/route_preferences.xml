@@ -6,7 +6,7 @@
         app:key="routeName"
         app:title="@string/route_name"
         app:useSimpleSummaryProvider="true" />
-    <moe.matsuri.nb4a.ui.EditConfigPreference
+    <com.moe.nd4a.app.ui.EditConfigPreference
         app:icon="@drawable/ic_baseline_layers_24"
         app:key="serverConfig"
         app:title="@string/custom_config"
@@ -43,7 +43,7 @@
             app:key="routeSourcePort"
             app:title="src port"
             app:useSimpleSummaryProvider="true" />
-        <moe.matsuri.nb4a.ui.SimpleMenuPreference
+        <com.moe.nd4a.app.ui.SimpleMenuPreference
             app:entries="@array/route_protocol_entry"
             app:entryValues="@array/route_protocol_value"
             app:icon="@drawable/ic_baseline_compare_arrows_24"

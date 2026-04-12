@@ -43,7 +43,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import moe.matsuri.nb4a.utils.NGUtil
+import com.moe.nd4a.app.utils.NGUtil
 import java.io.FileDescriptor
 import java.net.HttpURLConnection
 import java.net.InetAddress

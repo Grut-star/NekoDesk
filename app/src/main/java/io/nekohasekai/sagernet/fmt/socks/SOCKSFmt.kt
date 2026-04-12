@@ -2,11 +2,9 @@ package io.nekohasekai.sagernet.fmt.socks
 
 import io.nekohasekai.sagernet.ktx.decodeBase64UrlSafe
 import io.nekohasekai.sagernet.ktx.toLink
-import io.nekohasekai.sagernet.ktx.unUrlSafe
 import io.nekohasekai.sagernet.ktx.urlSafe
-import moe.matsuri.nb4a.SingBoxOptions
-import moe.matsuri.nb4a.utils.NGUtil
-import moe.matsuri.nb4a.utils.Util
+import com.moe.nd4a.app.SingBoxOptions
+import com.moe.nd4a.app.utils.NGUtil
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
