@@ -108,6 +108,8 @@ object DataStore : OnPreferenceDataStoreChangeListener {
     var bypassLanInCore by configurationStore.boolean(Key.BYPASS_LAN_IN_CORE)
 
     var allowAccess by configurationStore.boolean(Key.ALLOW_ACCESS)
+    // Новая настройка: Оставлять локальный HTTP/SOCKS порт открытым при работе VPN
+    var keepLocalPortInVpn by configurationStore.boolean("keepLocalPortInVpn") { false } // false по умолчанию
     var speedInterval by configurationStore.stringToInt(Key.SPEED_INTERVAL)
     var showGroupInNotification by configurationStore.boolean("showGroupInNotification")
 

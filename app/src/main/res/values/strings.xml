@@ -99,6 +99,8 @@
     <string name="require_transproxy">Enable Transproxy Inbound</string>
     <string name="transproxy_mode">Transproxy Mode</string>
     <string name="connection_test_url">Connection Test URL</string>
+    <string name="keepLocalPortInVpn">Keep local port in VPN</string>
+    <string name="keepLocalPortInVpn_sum">Keeps HTTP/SOCKS port open on 127.0.0.1 while VPN is active (default: off)</string>
     <!-- proxy category -->
     <string name="profile_name">Profile Name</string>
     <string name="server_address">Server</string>

@@ -41,6 +41,8 @@
 <string name="app_version">Версия</string>
 <string name="append_http_proxy">Добавить HTTP-прокси к VPN</string>
 <string name="append_http_proxy_sum">HTTP-прокси будет использоваться напрямую из (браузера / некоторых поддерживаемых приложений), без использования виртуального сетевого интерфейса (Android 10+)</string>
+<string name="keepLocalPortInVpn">Локальный порт при VPN</string>
+<string name="keepLocalPortInVpn_sum">Оставлять HTTP/SOCKS порт открытым на 127.0.0.1 при включенном VPN (По умолчанию выключено)</string>
 <string name="apply">Применить</string>
 <string name="apps">Приложения</string>
 <string name="apps_message">%d приложений</string>

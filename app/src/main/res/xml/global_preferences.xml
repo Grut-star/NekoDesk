@@ -204,6 +204,11 @@
             app:key="allowAccess"
             app:summary="@string/allow_access_sum"
             app:title="@string/allow_access" />
+	<SwitchPreference
+            app:defaultValue="false"
+            app:key="keepLocalPortInVpn"
+            app:title="@string/keepLocalPortInVpn" 
+            app:summary="@string/keepLocalPortInVpn_sum" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/cag_misc">

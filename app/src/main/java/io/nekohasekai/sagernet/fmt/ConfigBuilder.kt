@@ -224,15 +224,19 @@ fun buildConfig(
                     }
                 }
             })
-            inbounds.add(Inbound_MixedOptions().apply {
-                type = "mixed"
-                tag = TAG_MIXED
-                listen = bind
-                listen_port = DataStore.mixedPort
-                domain_strategy = genDomainStrategy(DataStore.resolveDestination)
-                sniff = needSniff
-                sniff_override_destination = needSniffOverride
-            })
+            // ДОБАВОЧНАЯ ПРОВЕРКА: локальный порт открывается ТОЛЬКО если мы не в режиме VPN,
+            // ИЛИ если пользователь явно разрешил раздачу по локальной сети (LAN)
+            if (!isVPN || DataStore.allowAccess||DataStore.keepLocalPortInVpn) {
+                inbounds.add(Inbound_MixedOptions().apply {
+                    type = "mixed"
+                    tag = TAG_MIXED
+                    listen = bind
+                    listen_port = DataStore.mixedPort
+                    domain_strategy = genDomainStrategy(DataStore.resolveDestination)
+                    sniff = needSniff
+                    sniff_override_destination = needSniffOverride
+                })
+            }
         }
 
         outbounds = mutableListOf()
@@ -694,6 +698,37 @@ fun buildConfig(
                 port = listOf(53)
                 action = "hijack-dns"
             })
+            // ЗАЩИТА ЛОКАЛЬНОГО ПОРТА ПО ПРИЛОЖЕНИЯМ (Per-App Proxy Enforcement)
+            if (DataStore.proxyApps) {
+                PackageCache.awaitLoadSync()
+                val appList = DataStore.individual.listByLineOrComma() // Замена perAppProxyList на individual
+                // Превращаем имена пакетов в UID Android (игнорируем системные UID < 1000)
+                val uids = appList.mapNotNull { PackageCache[it]?.takeIf { uid -> uid >= 1000 } }
+
+                if (uids.isNotEmpty()) {
+                    val targetInbounds = listOf(TAG_MIXED, "tun-in")
+                    if (DataStore.bypass) {
+                        // РЕЖИМ ЧЕРНОГО СПИСКА (Bypass)
+                        route.rules.add(0, Rule_DefaultOptions().apply {
+                            inbound = targetInbounds
+                            user_id = uids
+                            action = "reject"
+                        })
+                    } else {
+                        // РЕЖИМ БЕЛОГО СПИСКА:
+                        // 1. Блокируем вообще ВСЕХ, кто стучится на локальный порт
+                        route.rules.add(0, Rule_DefaultOptions().apply {
+                            inbound = targetInbounds
+                            action = "reject"
+                        })
+                        // 2. Разрешаем доступ только нужным UID (оно по идее окажется выше блокировки)
+                        route.rules.add(0, Rule_DefaultOptions().apply {
+                            inbound = targetInbounds
+                            user_id = uids
+                        })
+                    }
+                }
+            }
             if (DataStore.bypassLanInCore) {
                 route.rules.add(Rule_DefaultOptions().apply {
                     outbound = TAG_BYPASS

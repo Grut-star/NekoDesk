@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Network
 import android.net.ProxyInfo
 import android.os.Build
 import android.os.ParcelFileDescriptor
@@ -193,7 +194,10 @@ class VpnService : BaseVpnService(),
         }
 
         metered = DataStore.meteredNetwork
-        if (Build.VERSION.SDK_INT >= 29) builder.setMetered(metered)
+        if (Build.VERSION.SDK_INT >= 29) {
+            builder.setMetered(metered)
+            builder.setBlocking(true) // Добавочный KILLSWITCH
+        }
         conn = builder.establish() ?: throw NullConnectionException()
 
         return conn!!.fd
@@ -201,10 +205,19 @@ class VpnService : BaseVpnService(),
 
     fun updateUnderlyingNetwork(builder: Builder? = null) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            SagerNet.underlyingNetwork?.let {
-                builder?.setUnderlyingNetworks(arrayOf(SagerNet.underlyingNetwork))
-                    ?: setUnderlyingNetworks(arrayOf(SagerNet.underlyingNetwork))
-            }
+            // Передаем пустой массив, чтобы жестко спрятать физические сети
+                // от сторонних приложений.
+            val emptyNetworks = emptyArray<Network>()
+
+            builder?.setUnderlyingNetworks(emptyNetworks)
+                ?: setUnderlyingNetworks(emptyNetworks)
+            // Убрал привязку к конкретной физической сети
+            // По идее немного скажется на оптимизации
+            // Но безопасность важнее
+            //SagerNet.underlyingNetwork?.let {
+            //    builder?.setUnderlyingNetworks(arrayOf(SagerNet.underlyingNetwork))
+            //        ?: setUnderlyingNetworks(arrayOf(SagerNet.underlyingNetwork))
+            //}
         }
     }
 
