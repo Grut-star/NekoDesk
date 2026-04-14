@@ -82,6 +82,12 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         val mtu = findPreference<MTUPreference>(Key.MTU)!!
         globalCustomConfig = findPreference(Key.GLOBAL_CUSTOM_CONFIG)!!
         globalCustomConfig.useConfigStore(Key.GLOBAL_CUSTOM_CONFIG)
+        //Обработка кнопки
+        val advancedSettings = findPreference<Preference>("advanced_settings_entry")
+        advancedSettings?.setOnPreferenceClickListener {
+            startActivity(Intent(requireContext(), AdvancedSettingsActivity::class.java))
+            true
+        }
 
         logLevel.dialogLayoutResource = R.layout.layout_loglevel_help
         logLevel.setOnPreferenceChangeListener { _, _ ->

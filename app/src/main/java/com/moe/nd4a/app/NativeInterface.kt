@@ -14,10 +14,10 @@ import io.nekohasekai.sagernet.ktx.runOnDefaultDispatcher
 import io.nekohasekai.sagernet.utils.PackageCache
 import libcore.BoxPlatformInterface
 import libcore.Libcore
-import libcore.NB4AInterface
+import libcore.ND4AInterface
 import java.net.InetSocketAddress
 
-class NativeInterface : BoxPlatformInterface, NB4AInterface {
+class NativeInterface : BoxPlatformInterface, ND4AInterface {
 
     //  libbox interface
 

@@ -110,6 +110,8 @@ object DataStore : OnPreferenceDataStoreChangeListener {
     var allowAccess by configurationStore.boolean(Key.ALLOW_ACCESS)
     // Новая настройка: Оставлять локальный HTTP/SOCKS порт открытым при работе VPN
     var keepLocalPortInVpn by configurationStore.boolean("keepLocalPortInVpn") { false } // false по умолчанию
+    var usePhysicalMtu by configurationStore.boolean("use_physical_mtu") {true}
+    var strictKillswitch by configurationStore.boolean("strict_killswitch") {false}
     var speedInterval by configurationStore.stringToInt(Key.SPEED_INTERVAL)
     var showGroupInNotification by configurationStore.boolean("showGroupInNotification")
 

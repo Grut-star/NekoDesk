@@ -99,8 +99,16 @@
     <string name="require_transproxy">Enable Transproxy Inbound</string>
     <string name="transproxy_mode">Transproxy Mode</string>
     <string name="connection_test_url">Connection Test URL</string>
+    <!-- новые строки -->
     <string name="keepLocalPortInVpn">Keep local port in VPN</string>
     <string name="keepLocalPortInVpn_sum">Keeps HTTP/SOCKS port open on 127.0.0.1 while VPN is active (default: off)</string>
+    <string name="advanced_settings_entry">Open advanced settings</string>
+    <string name="advanced_settings_entry_summary">Open advanced settings</string>
+    <string name="AutoMTU">Use static or physical MTU?</string>
+    <string name="AutoMTU_sum">By default, it automatically adjusts the MTU to your current network (Wi-Fi/LTE). This reduces performance, but removes the ability to detect a non-standard MTU.</string>
+    <string name="Killswitch">Strict Killswitch (Blocking)</string>
+    <string name="Killswitch_sum">Blocks all traffic outside the tunnel at the Android level. WARNING: This will break the internet connection for apps that are excluded!</string>
+
     <!-- proxy category -->
     <string name="profile_name">Profile Name</string>
     <string name="server_address">Server</string>

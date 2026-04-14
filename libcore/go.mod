@@ -1,8 +1,6 @@
 module libcore
 
-go 1.23.1
-
-toolchain go1.23.6
+go 1.26.2
 
 require (
 	github.com/matsuridayo/libneko v1.0.0 // replaced
@@ -82,6 +80,10 @@ require (
 	lukechampine.com/blake3 v1.3.0 // indirect
 )
 
+require github.com/Grut-star/shared-firewall v0.0.0
+
+replace github.com/Grut-star/shared-firewall => ../shared-firewall
+
 replace github.com/matsuridayo/libneko => ../../libneko
 
-replace github.com/sagernet/sing-box => ../../sing-box
+replace github.com/sagernet/sing-box => ../../sing-box-fork

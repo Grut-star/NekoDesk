@@ -18,6 +18,10 @@ import io.nekohasekai.sagernet.ktx.*
 import io.nekohasekai.sagernet.ui.VpnRequestActivity
 import io.nekohasekai.sagernet.utils.Subnet
 import android.net.VpnService as BaseVpnService
+import libcore.Libcore
+import android.net.ConnectivityManager
+import android.content.Context
+import java.net.NetworkInterface
 
 class VpnService : BaseVpnService(),
     BaseService.Interface {
@@ -40,6 +44,21 @@ class VpnService : BaseVpnService(),
 
     override suspend fun startProcesses() {
         DataStore.vpnService = this
+
+        // --- ИНИЦИАЛИЗАЦИЯ БРАНДМАУЭРА ---
+        val isFirewallEnabled = DataStore.configurationStore.getBoolean("firewall_enabled", false)
+
+        if (isFirewallEnabled) {
+            val firewallCallback = FirewallCallbackImpl(this)
+            Libcore.registerFirewallCallback(firewallCallback)
+            Logs.d("[FIREWALL] Гибридный брандмауэр АКТИВИРОВАН")
+        } else {
+            // Обязательно передаем null, если фича выключена, чтобы ядро пропускало трафик
+            Libcore.registerFirewallCallback(null)
+            Logs.d("[FIREWALL] Гибридный брандмауэр ВЫКЛЮЧЕН")
+        }
+        // --------------------------------------------
+
         super.startProcesses() // launch proxy instance
     }
 
@@ -92,10 +111,20 @@ class VpnService : BaseVpnService(),
 //        Logs.d(tunPlatformOptionsJson)
 //        val tunOptions = JSONObject(tunOptionsJson)
 
+        val finalMtu = if (DataStore.usePhysicalMtu) {
+            val pMtu = getPhysicalMtu(this)
+            Logs.i("[VPN] 🛠 Используется физический MTU: $pMtu")
+            pMtu
+        } else {
+            val cMtu = DataStore.mtu
+            Logs.i("[VPN] 🛠 Используется ручной MTU: $cMtu")
+            cMtu
+        }
+
         // address & route & MTU ...... use ND4A GUI config
         val builder = Builder().setConfigureIntent(SagerNet.configureIntent(this))
             .setSession(getString(R.string.app_name))
-            .setMtu(DataStore.mtu)
+            .setMtu(finalMtu)
         val ipv6Mode = DataStore.ipv6Mode
 
         // address
@@ -196,7 +225,10 @@ class VpnService : BaseVpnService(),
         metered = DataStore.meteredNetwork
         if (Build.VERSION.SDK_INT >= 29) {
             builder.setMetered(metered)
-            builder.setBlocking(true) // Добавочный KILLSWITCH
+            if (DataStore.strictKillswitch) {// Добавочный KILLSWITCH
+                Logs.i("[VPN] Включен строгий Killswitch (блокировка соединений без VPN)")
+                builder.setBlocking(true)
+            }
         }
         conn = builder.establish() ?: throw NullConnectionException()
 
@@ -207,19 +239,22 @@ class VpnService : BaseVpnService(),
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             // Передаем пустой массив, чтобы жестко спрятать физические сети
                 // от сторонних приложений.
-            val emptyNetworks = emptyArray<Network>()
+            //val emptyNetworks = emptyArray<Network>()
 
-            builder?.setUnderlyingNetworks(emptyNetworks)
-                ?: setUnderlyingNetworks(emptyNetworks)
+            //builder?.setUnderlyingNetworks(emptyNetworks)
+            //    ?: setUnderlyingNetworks(emptyNetworks)
             // Убрал привязку к конкретной физической сети
             // По идее немного скажется на оптимизации
             // Но безопасность важнее
-            //SagerNet.underlyingNetwork?.let {
-            //    builder?.setUnderlyingNetworks(arrayOf(SagerNet.underlyingNetwork))
-            //        ?: setUnderlyingNetworks(arrayOf(SagerNet.underlyingNetwork))
-            //}
+            // Чтож идея неплоха, но не сработало
+
+            SagerNet.underlyingNetwork?.let {
+                builder?.setUnderlyingNetworks(arrayOf(SagerNet.underlyingNetwork))
+                    ?: setUnderlyingNetworks(arrayOf(SagerNet.underlyingNetwork))
+            }
         }
     }
+
 
     override fun onRevoke() = stopRunner()
 
@@ -228,4 +263,42 @@ class VpnService : BaseVpnService(),
         super.onDestroy()
         data.binder.close()
     }
+}
+
+/**
+ * Умная функция, которая получает MTU у физической сети
+ */
+fun getPhysicalMtu(context: Context): Int {
+    var mtu = 1500 // Стандартный безопасный MTU (Ethernet/Wi-Fi) по умолчанию
+    try {
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val activeNetwork = cm.activeNetwork
+            val lp = cm.getLinkProperties(activeNetwork)
+
+            // Если Android отдал нам MTU и он в адекватных рамках (1280 - минимальный для IPv6)
+            if (lp != null) {
+                // Вытаскиваем MTU в зависимости от версии Android
+                val currentMtu = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    lp.mtu // Для новых Android 10+ (API 29+)
+                } else {
+                    // Для старых Android 6.0 - 9.0 (API 23 - 28)
+                    val interfaceName = lp.interfaceName
+                    if (interfaceName != null) {
+                        NetworkInterface.getByName(interfaceName)?.mtu ?: 0
+                    } else {
+                        0
+                    }
+                }
+                // Если Android отдал нам MTU и он в адекватных рамках (1280 - минимальный для IPv6)
+                if (currentMtu in 1280..1500) {
+                    mtu = currentMtu
+                }
+
+            }
+        }
+    } catch (e: Exception) {
+        // Игнорируем ошибку, fallback на 1500 отработает
+    }
+    return mtu
 }

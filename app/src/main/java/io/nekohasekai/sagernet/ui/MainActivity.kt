@@ -49,6 +49,20 @@ import io.nekohasekai.sagernet.ktx.parseProxies
 import io.nekohasekai.sagernet.ktx.readableMessage
 import io.nekohasekai.sagernet.ktx.runOnDefaultDispatcher
 import com.moe.nd4a.app.utils.Util
+import android.util.Base64
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import io.nekohasekai.sagernet.database.RuleEntity
+import io.nekohasekai.sagernet.database.SagerDatabase
+import org.json.JSONObject
+import java.io.ByteArrayInputStream
+import java.util.zip.GZIPInputStream
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import io.nekohasekai.sagernet.ktx.Logs
+
 
 class MainActivity : ThemedActivity(),
     SagerConnection.Callback,
@@ -124,6 +138,7 @@ class MainActivity : ThemedActivity(),
                 .setPositiveButton(android.R.string.ok, null)
                 .show()
         }
+        handleDeepLink(intent)
     }
 
     fun refreshNavMenu(clashApi: Boolean) {
@@ -145,6 +160,7 @@ class MainActivity : ThemedActivity(),
                 importProfile(uri)
             }
         }
+        handleDeepLink(intent)
     }
 
     fun urlTest(): Int {
@@ -154,6 +170,77 @@ class MainActivity : ThemedActivity(),
         return connection.service!!.urlTest()
     }
 
+    private fun handleDeepLink(intent: Intent?) {
+        val uri = intent?.data ?: return
+        if (uri.host == "nekodesk.app" && uri.path == "/import") {
+            val payload = uri.getQueryParameter("payload")
+            if (!payload.isNullOrEmpty()) {
+                showImportWarningDialog(payload)
+            }
+        }
+    }
+
+    private fun showImportWarningDialog(payload: String) {
+        AlertDialog.Builder(this)
+            .setTitle("⚠️ Внимание: Импорт настроек")
+            .setMessage("Вы уверены, что хотите импортировать правила и настройки приложения? Это ДОБАВИТ новые правила маршрутизации и изменит параметры сети.\n\n(НЕ ИСПОЛЬЗУЙТЕ НАСТРОЙКИ ИЗ НЕИЗВЕСТНЫХ ИСТОЧНИКОВ)")
+            .setPositiveButton("Импортировать") { _, _ -> processImport(payload) }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
+
+    private fun processImport(payload: String) {
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                // 1. Декодируем и распаковываем
+                val compressedBytes = Base64.decode(payload, Base64.URL_SAFE)
+                val jsonString = GZIPInputStream(ByteArrayInputStream(compressedBytes)).bufferedReader().use { it.readText() }
+                val rootObj = JSONObject(jsonString)
+
+                // 2. Применяем настройки DataStore
+                if (rootObj.has("settings")) {
+                    val settingsObj = rootObj.getJSONObject("settings")
+                    if (settingsObj.has("mtu")) DataStore.configurationStore.putInt("mtu", settingsObj.getInt("mtu"))
+                    if (settingsObj.has("use_physical_mtu")) DataStore.configurationStore.putBoolean("use_physical_mtu", settingsObj.getBoolean("use_physical_mtu"))
+                    if (settingsObj.has("strict_killswitch")) DataStore.configurationStore.putBoolean("strict_killswitch", settingsObj.getBoolean("strict_killswitch"))
+                    if (settingsObj.has("firewall_enabled")) DataStore.configurationStore.putBoolean("firewall_enabled", settingsObj.getBoolean("firewall_enabled"))
+                }
+
+                // 3. Импортируем правила в базу данных
+                if (rootObj.has("rules")) {
+                    val rulesArray = rootObj.getJSONArray("rules")
+                    for (i in 0 until rulesArray.length()) {
+                        val ruleObj = rulesArray.getJSONObject(i)
+                        val rule = RuleEntity()
+                        rule.enabled = true
+                        if (ruleObj.has("name")) rule.name = ruleObj.getString("name")
+                        if (ruleObj.has("outbound")) rule.outbound = ruleObj.getLong("outbound")
+                        if (ruleObj.has("domains")) rule.domains = ruleObj.getString("domains")
+                        if (ruleObj.has("packages")) {
+                            val pkgArray = ruleObj.getJSONArray("packages")
+                            val pkgSet = mutableSetOf<String>()
+                            for (j in 0 until pkgArray.length()) {
+                                pkgSet.add(pkgArray.getString(j))
+                            }
+                            rule.packages = pkgSet
+                        }
+
+                        SagerDatabase.rulesDao.createRule(rule)
+                    }
+                }
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, "Настройки успешно импортированы!", Toast.LENGTH_LONG).show()
+                }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Logs.e("Ошибка импорта: ${e.message}")
+                    Toast.makeText(this@MainActivity, "Ошибка: неверная ссылка импорта", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     suspend fun importSubscription(uri: Uri) {
         val group: ProxyGroup
 
