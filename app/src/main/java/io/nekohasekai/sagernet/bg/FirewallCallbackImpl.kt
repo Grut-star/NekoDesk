@@ -197,37 +197,70 @@ class FirewallCallbackImpl(private val context: Context) : FirewallCallback {
                 val packages = pm.getPackagesForUid(uid)
                 val packageName = if (!packages.isNullOrEmpty()) packages[0] else ""
 
+                val targetOutbound = if (allow) 0L else -2L // 0L = Proxy, -2L = Block
+                val dao = SagerDatabase.rulesDao
 
-                val rule = RuleEntity()
-                rule.enabled = true
-                rule.outbound = if (allow) 0L else -2L // 0L = Proxy (разрешить), -2L = Block (запретить)
-
-                when (ruleType) {
-                    1, 2 -> { // Разрешить/Запретить конкретный домен
-                        rule.name = "FW: ${if(allow) "✔" else "❌"} $domain ($appName)"
-                        rule.domains = "full:$domain" // Точное совпадение домена
-                        if (packageName.isNotEmpty()) {
-                            rule.packages = setOf(packageName) // Привязываем к приложению
-                        }
+                // Ищем все существующие правила
+                val allRules = dao.allRules()
+                if (ruleType == 3 || ruleType == 4) {
+                    // РЕЖИМ "ВСЁ ПРИЛОЖЕНИЕ"
+                    // Ищем, есть ли уже глобальное правило для этого пакета без указания доменов
+                    var existingRule = allRules.firstOrNull {
+                        it.packages.contains(packageName) && it.domains.isBlank() && it.outbound == targetOutbound
                     }
-                    3, 4 -> { // Разрешить/Запретить приложению ВСЁ
-                        rule.name = "FW: ${if(allow) "✔" else "❌"} ВСЁ ($appName)"
-                        if (packageName.isNotEmpty()) {
-                            rule.packages = setOf(packageName)
-                        } else {
-                            Logs.e("[FIREWALL] Не удалось создать глобальное правило: не найден пакет для UID $uid")
-                            return@launch
+
+                    if (existingRule == null) {
+                        // Создаем новое глобальное правило
+                        val rule = RuleEntity().apply {
+                            name = "FW: ${if(allow) "✔" else "❌"} ВСЁ ($appName)"
+                            enabled = true
+                            outbound = targetOutbound
+                            this.packages = setOf(packageName)
+                            userOrder = dao.nextOrder() ?: 0L
                         }
+                        dao.createRule(rule)
+                    }
+                    Logs.i("[FIREWALL] 💾 Глобальное правило для $appName сохранено!")
+
+                } else {
+                    // РЕЖИМ "КОНКРЕТНЫЙ ДОМЕН"
+                    // Ищем существующее правило для этого пакета с таким же действием
+                    val existingRule = allRules.firstOrNull {
+                        it.packages.contains(packageName) &&
+                                it.outbound == targetOutbound &&
+                                it.name.startsWith("FW:") &&
+                                it.domains.isNotBlank() // Ищем именно доменные правила
+                    }
+
+                    val newDomainEntry = "full:$domain"
+
+                    if (existingRule != null) {
+                        // ПРАВИЛО НАЙДЕНО: Дописываем домен
+                        val currentDomains = existingRule.domains.split("\n").toMutableList()
+
+                        if (!currentDomains.contains(newDomainEntry)) {
+                            currentDomains.add(newDomainEntry)
+                            existingRule.domains = currentDomains.joinToString("\n")
+                            // Обновляем количество доменов в названии (для красоты в UI)
+                            existingRule.name = "FW: ${if(allow) "✔" else "❌"} ${currentDomains.size} доменов ($appName)"
+
+                            dao.updateRule(existingRule)
+                            Logs.i("[FIREWALL] 💾 Домен $domain добавлен в существующее правило для $appName!")
+                        }
+                    } else {
+                        // ПРАВИЛА НЕТ: Создаем новое
+                        val rule = RuleEntity().apply {
+                            name = "FW: ${if(allow) "✔" else "❌"} 1 домен ($appName)"
+                            enabled = true
+                            outbound = targetOutbound
+                            domains = newDomainEntry
+                            this.packages = setOf(packageName)
+                            userOrder = dao.nextOrder() ?: 0L
+                        }
+                        dao.createRule(rule)
+                        Logs.i("[FIREWALL] 💾 Создано новое правило для $appName с доменом $domain!")
                     }
                 }
-
-                // Сохраняем в БД SagerNet
-                SagerDatabase.rulesDao.createRule(rule)
-                Logs.i("[FIREWALL] 💾 Правило успешно сохранено в базу данных!")
-
-                // TODO: Если в будущем вы захотите, чтобы правило применялось МГНОВЕННО для всех будущих
-                // соединений без перезапуска VPN, вам придется дернуть Intent на перезагрузку сервиса,
-                // но пока для MVP текущего кэша sessionDecisionCache достаточно.
 
             } catch (e: Exception) {
                 Logs.e("[FIREWALL] 💥 Ошибка сохранения правила: ${e.message}")
