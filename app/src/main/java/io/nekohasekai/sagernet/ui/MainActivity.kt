@@ -183,7 +183,7 @@ class MainActivity : ThemedActivity(),
     private fun showImportWarningDialog(payload: String) {
         AlertDialog.Builder(this)
             .setTitle("⚠️ Внимание: Импорт настроек")
-            .setMessage("Вы уверены, что хотите импортировать правила и настройки приложения? Это ДОБАВИТ новые правила маршрутизации и изменит параметры сети.\n\n(НЕ ИСПОЛЬЗУЙТЕ НАСТРОЙКИ ИЗ НЕИЗВЕСТНЫХ ИСТОЧНИКОВ)")
+            .setMessage("Вы уверены, что хотите импортировать правила и настройки? Это ИЗМЕНИТ ваши параметры сети и добавит новые правила маршрутизации.\n\n(НЕ ИСПОЛЬЗУЙТЕ НАСТРОЙКИ ИЗ НЕИЗВЕСТНЫХ ИСТОЧНИКОВ)")
             .setPositiveButton("Импортировать") { _, _ -> processImport(payload) }
             .setNegativeButton("Отмена", null)
             .show()
@@ -192,30 +192,62 @@ class MainActivity : ThemedActivity(),
     private fun processImport(payload: String) {
         GlobalScope.launch(Dispatchers.IO) {
             try {
-                // 1. Декодируем и распаковываем
+                // Декодируем и распаковываем
                 val compressedBytes = Base64.decode(payload, Base64.URL_SAFE)
                 val jsonString = GZIPInputStream(ByteArrayInputStream(compressedBytes)).bufferedReader().use { it.readText() }
                 val rootObj = JSONObject(jsonString)
 
-                // 2. Применяем настройки DataStore
+                // ДИНАМИЧЕСКИ применяем глобальные настройки DataStore
                 if (rootObj.has("settings")) {
                     val settingsObj = rootObj.getJSONObject("settings")
-                    if (settingsObj.has("mtu")) DataStore.configurationStore.putInt("mtu", settingsObj.getInt("mtu"))
-                    if (settingsObj.has("use_physical_mtu")) DataStore.configurationStore.putBoolean("use_physical_mtu", settingsObj.getBoolean("use_physical_mtu"))
-                    if (settingsObj.has("strict_killswitch")) DataStore.configurationStore.putBoolean("strict_killswitch", settingsObj.getBoolean("strict_killswitch"))
-                    if (settingsObj.has("firewall_enabled")) DataStore.configurationStore.putBoolean("firewall_enabled", settingsObj.getBoolean("firewall_enabled"))
+                    val keys = settingsObj.keys()
+
+                    while (keys.hasNext()) {
+                        val key = keys.next()
+                        if (settingsObj.isNull(key)) continue
+
+                        val value = settingsObj.get(key)
+
+                        // Сохраняем значение в зависимости от его типа.
+                        // Даже если в текущей версии приложения еще нет такой настройки,
+                        // она сохранится в БД "на будущее" и не вызовет ошибки.
+                        when (value) {
+                            is Boolean -> DataStore.configurationStore.putBoolean(key, value)
+                            is Int -> DataStore.configurationStore.putInt(key, value)
+                            is Long -> DataStore.configurationStore.putLong(key, value)
+                            is String -> DataStore.configurationStore.putString(key, value)
+                            is Double -> DataStore.configurationStore.putFloat(key, value.toFloat())
+                        }
+                    }
                 }
 
-                // 3. Импортируем правила в базу данных
+                // Импортируем правила в базу данных
                 if (rootObj.has("rules")) {
                     val rulesArray = rootObj.getJSONArray("rules")
+                    val dao = SagerDatabase.rulesDao
+                    val existingRules = dao.allRules() // Загружаем текущие правила для проверки дубликатов
+
                     for (i in 0 until rulesArray.length()) {
                         val ruleObj = rulesArray.getJSONObject(i)
+
+                        val ruleName = if (ruleObj.has("name")) ruleObj.getString("name") else "Imported Rule"
+                        val ruleOutbound = if (ruleObj.has("outbound")) ruleObj.getLong("outbound") else 0L
+                        val ruleDomains = if (ruleObj.has("domains")) ruleObj.getString("domains") else ""
+
+                        // ПРОВЕРКА НА ДУБЛИКАТЫ: Если правило с таким же именем, действием и доменами уже есть, пропускаем
+                        val isDuplicate = existingRules.any {
+                            it.name == ruleName && it.outbound == ruleOutbound && it.domains == ruleDomains
+                        }
+
+                        if (isDuplicate) continue
+
                         val rule = RuleEntity()
                         rule.enabled = true
-                        if (ruleObj.has("name")) rule.name = ruleObj.getString("name")
-                        if (ruleObj.has("outbound")) rule.outbound = ruleObj.getLong("outbound")
-                        if (ruleObj.has("domains")) rule.domains = ruleObj.getString("domains")
+                        rule.name = ruleName
+                        rule.outbound = ruleOutbound
+                        rule.domains = ruleDomains
+                        rule.userOrder = dao.nextOrder() ?: 0L
+
                         if (ruleObj.has("packages")) {
                             val pkgArray = ruleObj.getJSONArray("packages")
                             val pkgSet = mutableSetOf<String>()
@@ -225,18 +257,22 @@ class MainActivity : ThemedActivity(),
                             rule.packages = pkgSet
                         }
 
-                        SagerDatabase.rulesDao.createRule(rule)
+                        dao.createRule(rule)
                     }
                 }
 
+                // Успешное завершение и перезагрузка ядра (если VPN включен)
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@MainActivity, "Настройки успешно импортированы!", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(this@MainActivity, "Настройки успешно импортированы!", Toast.LENGTH_LONG).show()
+                    Logs.e("[IMPORT] Настройки успешно импортированы")
+
+                    displayFragmentWithId(R.id.nav_configuration)
                 }
 
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Logs.e("Ошибка импорта: ${e.message}")
-                    Toast.makeText(this@MainActivity, "Ошибка: неверная ссылка импорта", Toast.LENGTH_SHORT).show()
+                    Logs.e("[IMPORT] Ошибка импорта: ${e.message}")
+                    //Toast.makeText(this@MainActivity, "Ошибка: неверный формат ссылки импорта", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -513,7 +549,9 @@ class MainActivity : ThemedActivity(),
     override fun onPreferenceDataStoreChanged(store: PreferenceDataStore, key: String) {
         when (key) {
             Key.SERVICE_MODE -> onBinderDied()
-            Key.PROXY_APPS, Key.BYPASS_MODE, Key.INDIVIDUAL -> {
+            Key.PROXY_APPS, Key.BYPASS_MODE, Key.INDIVIDUAL,
+            "firewall_enabled","strict_killswitch",
+            "use_physical_mtu","keepLocalPortInVpn" -> {
                 if (DataStore.serviceState.canStop) {
                     snackbar(getString(R.string.need_reload)).setAction(R.string.apply) {
                         SagerNet.reloadService()

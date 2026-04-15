@@ -124,7 +124,19 @@ fun buildConfig(
         return list
     }
 
-    val extraRules = if (forTest) listOf() else SagerDatabase.rulesDao.enabledRules()
+    val extraRules = if (forTest) {
+        listOf()
+    } else {
+        SagerDatabase.rulesDao.enabledRules().filter { rule ->
+            // Умная фильтрация: если брандмауэр выключен, мы просто не пускаем
+            // в маршрутизатор правила, которые начинаются на "FW:"
+            if (!DataStore.firewallEnabled && rule.name.startsWith("FW:")) {
+                false
+            } else {
+                true
+            }
+        }
+    }
     val extraProxies =
         if (forTest) mapOf() else SagerDatabase.proxyDao.getEntities(extraRules.mapNotNull { rule ->
             rule.outbound.takeIf { it > 0 && it != proxy.id }
@@ -252,6 +264,50 @@ fun buildConfig(
             rules = mutableListOf()
             rule_set = mutableListOf()
         }
+
+// === НАЧАЛО: ИНТЕГРАЦИЯ ПРАВИЛ ADGUARD ===
+        if (!forTest) {
+            val adguardDir = java.io.File(SagerNet.application.filesDir, "adguard_rules")
+            if (adguardDir.exists() && adguardDir.isDirectory) {
+                // Ищем .json файлы
+                val jsonFiles = adguardDir.listFiles { _, name -> name.endsWith(".json") }
+
+                jsonFiles?.forEach { file ->
+                    val rsTag = file.nameWithoutExtension // "adguard_block" или "adguard_allow"
+
+                    // 1. Подключаем JSON как source rule-set
+                    route.rule_set.add(RuleSet().apply {
+                        tag = rsTag
+                        type = "local"
+                        format = "source" // <-- ТЕПЕРЬ ЭТО SOURCE
+                        path = file.absolutePath
+                    })
+
+                    // 2. Создаем правила маршрутизации
+                    if (rsTag.contains("allow", ignoreCase = true)) {
+                        route.rules.add(0, Rule_DefaultOptions().apply {
+                            rule_set = listOf(rsTag)
+                            outbound = TAG_DIRECT
+                        })
+                        dns.rules.add(0, DNSRule_DefaultOptions().apply {
+                            rule_set = listOf(rsTag)
+                            server = "dns-direct"
+                        })
+                    } else if (rsTag.contains("block", ignoreCase = true)) {
+                        route.rules.add(0, Rule_DefaultOptions().apply {
+                            rule_set = listOf(rsTag)
+                            action = "reject"
+                        })
+                        dns.rules.add(0, DNSRule_DefaultOptions().apply {
+                            rule_set = listOf(rsTag)
+                            server = "dns-block"
+                            disable_cache = true
+                        })
+                    }
+                }
+            }
+        }
+        // === КОНЕЦ: ИНТЕГРАЦИЯ ПРАВИЛ ADGUARD ===
 
         // returns outbound tag
         fun buildChain(

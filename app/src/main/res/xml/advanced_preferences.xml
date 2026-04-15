@@ -17,6 +17,50 @@
             app:summary="Показать демо-окно заглушку (nekodesk -> example.com)" />
     </androidx.preference.PreferenceCategory>
 
+    <androidx.preference.Preference
+        app:icon="@drawable/ic_baseline_security_24"
+        app:key="firewall_ip_history"
+        app:title="История заблокированных IP"
+        app:summary="Управление прямыми IP-подключениями приложений" />
+
+    <androidx.preference.PreferenceCategory
+        app:key="adguard_rules_category"
+        app:title="Блокировка рекламы и трекеров">
+
+        <androidx.preference.Preference
+            app:key="adg_filters_general"
+            app:title="Общие фильтры"
+            app:summary="AdGuard, HaGeZi и базовые списки" />
+
+        <androidx.preference.Preference
+            app:key="adg_filters_security"
+            app:title="Безопасность"
+            app:summary="Malware, фишинг и вредоносное ПО" />
+
+        <androidx.preference.Preference
+            app:key="adg_filters_regional"
+            app:title="Региональные и прочие"
+            app:summary="RU AdList, Peter Lowe и т.д." />
+
+        <androidx.preference.Preference
+            app:key="adg_custom_urls"
+            app:title="Свои ссылки на фильтры"
+            app:summary="Добавьте свои ссылки (каждая с новой строки)" />
+
+        <androidx.preference.Preference
+            app:icon="@drawable/ic_baseline_update_24"
+            app:key="adg_update_button"
+            app:title="🔄 Загрузить и обновить"
+            app:summary="Скачать выбранные списки и применить" />
+
+        <androidx.preference.Preference
+            app:icon="@drawable/ic_action_delete"
+            app:key="adg_clear_button"
+            app:title="🗑 Очистить все правила" />
+
+    </androidx.preference.PreferenceCategory>
+
+
     <androidx.preference.PreferenceCategory
         app:key="firewall_rules_category"
         app:title="Экспорт настроек и правил маршрутизации"

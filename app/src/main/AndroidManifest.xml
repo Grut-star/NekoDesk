@@ -150,6 +150,10 @@
                 android:resource="@xml/shortcuts" />
         </activity>
         <activity
+            android:name=".ui.BlockedIpHistoryActivity"
+            android:label="История IP"
+            android:theme="@style/Theme.Start" />
+        <activity
             android:name="io.nekohasekai.sagernet.ui.VpnRequestActivity"
             android:excludeFromRecents="true"
             android:taskAffinity="" />

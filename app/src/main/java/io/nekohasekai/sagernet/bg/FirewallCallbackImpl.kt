@@ -42,18 +42,23 @@ class FirewallCallbackImpl(private val context: Context) : FirewallCallback {
                         val packages = rule.packages
 
                         if (!packages.isNullOrEmpty()) {
-                            val pkgName = packages.first()
-                            val uid = PackageCache[pkgName]
+                            for (pkgName in packages) { // Проходим по всем пакетам в правиле, а не только по первому
+                                val uid = PackageCache[pkgName]
+                                if (uid != null && uid >= 1000) {
+                                    val domainRule = rule.domains
 
-                            if (uid != null && uid >= 1000) {
-                                val domainRule = rule.domains
-                                if (domainRule.isNullOrEmpty()) {
-                                    // Правило применялось на ВСЁ приложение
-                                    sessionAppCache[uid] = isAllow
-                                } else if (domainRule.startsWith("full:")) {
-                                    // Правило применялось на конкретный домен
-                                    val cleanDomain = domainRule.removePrefix("full:")
-                                    sessionDomainCache["$uid:$cleanDomain"] = isAllow
+                                    if (domainRule.isNullOrEmpty()) {
+                                        // Правило применялось на ВСЁ приложение
+                                        sessionAppCache[uid] = isAllow
+                                    } else {
+                                        // Обязательно разбиваем домены по переносу строки!
+                                        domainRule.split("\n").forEach { line ->
+                                            val cleanDomain = line.trim().removePrefix("full:")
+                                            if (cleanDomain.isNotEmpty()) {
+                                                sessionDomainCache["$uid:$cleanDomain"] = isAllow
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -115,6 +120,9 @@ class FirewallCallbackImpl(private val context: Context) : FirewallCallback {
                         // МГНОВЕННОЕ ПРИМЕНЕНИЕ В ОЗУ (Чтобы окно не вылезло на следующий же запрос)
                         if (ruleType == 3 || ruleType == 4) {
                             sessionAppCache[realUid] = allow
+                            sessionDomainCache.keys.filter { it.startsWith("$realUid:") }.forEach {
+                                sessionDomainCache.remove(it)
+                            }
                             Logs.i("[FIREWALL] \uD83D\uDCF1 Правило кэшировано для ВСЕГО приложения: $appName")
                         } else {
                             sessionDomainCache[cacheKey] = allow
@@ -155,12 +163,12 @@ class FirewallCallbackImpl(private val context: Context) : FirewallCallback {
 
     override fun notifyDirectIpBlocked(uid: Long, ip: String?) {
         if (ip == null) return
-        val appName = getAppNameByUid(uid.toInt())
-        Logs.i("[FIREWALL] 🛑 Блок прямого IP: $ip от $appName")
+        val realUid = uid.toInt()
+        val appName = getAppNameByUid(realUid)
+        // Добавляем запись в нашу историю
+        FirewallIpHistoryManager.addRecord(realUid, appName, ip)
 
-        // TODO Здесь мы чуть позже сделаем реальное Push-уведомление Android.
-        // Пока просто выведем в Logcat для проверки.
-        println("🔥 [FIREWALL] Заблокировано прямое IP подключение! Приложение: $appName, IP: $ip")
+        Logs.i("[FIREWALL] 🛑 Блок прямого IP: $ip от $appName")
     }
 
     /**
@@ -198,18 +206,34 @@ class FirewallCallbackImpl(private val context: Context) : FirewallCallback {
                 val packageName = if (!packages.isNullOrEmpty()) packages[0] else ""
 
                 val targetOutbound = if (allow) 0L else -2L // 0L = Proxy, -2L = Block
+                val oppositeOutbound = if (allow) -2L else 0L // Нам нужно знать противоположное действие
                 val dao = SagerDatabase.rulesDao
 
                 // Ищем все существующие правила
                 val allRules = dao.allRules()
                 if (ruleType == 3 || ruleType == 4) {
-                    // РЕЖИМ "ВСЁ ПРИЛОЖЕНИЕ"
-                    // Ищем, есть ли уже глобальное правило для этого пакета без указания доменов
-                    var existingRule = allRules.firstOrNull {
-                        it.packages.contains(packageName) && it.domains.isBlank() && it.outbound == targetOutbound
+                    // Ищем ПРОТИВОРЕЧАЩИЕ глобальные правила и вычищаем из них это приложение
+                    allRules.filter { it.name.startsWith("FW:") && it.domains.isBlank() && it.outbound == oppositeOutbound }
+                        .forEach { rule ->
+                            val currentPkgs = rule.packages?.toMutableSet() ?: mutableSetOf()
+                            if (currentPkgs.remove(packageName)) {
+                                rule.packages = currentPkgs
+                                // Если в правиле больше нет приложений, удаляем правило целиком, иначе обновляем
+                                if (currentPkgs.isEmpty()) dao.deleteRule(rule) else dao.updateRule(rule)
+                            }
+                        }
+                    // Добавляем приложение в НУЖНОЕ глобальное правило
+                    val targetRule = allRules.firstOrNull {
+                        it.name.startsWith("FW:") && it.domains.isBlank() && it.outbound == targetOutbound
                     }
 
-                    if (existingRule == null) {
+                    if (targetRule != null) {
+                        val currentPkgs = targetRule.packages?.toMutableSet() ?: mutableSetOf()
+                        if (currentPkgs.add(packageName)) {
+                            targetRule.packages = currentPkgs
+                            dao.updateRule(targetRule)
+                        }
+                    } else{
                         // Создаем новое глобальное правило
                         val rule = RuleEntity().apply {
                             name = "FW: ${if(allow) "✔" else "❌"} ВСЁ ($appName)"
@@ -225,14 +249,34 @@ class FirewallCallbackImpl(private val context: Context) : FirewallCallback {
                 } else {
                     // РЕЖИМ "КОНКРЕТНЫЙ ДОМЕН"
                     // Ищем существующее правило для этого пакета с таким же действием
+                    val newDomainEntry = "full:$domain"
+
+                    // Удаляем этот домен из ПРОТИВОРЕЧАЩЕГО правила (например, удаляем из Block, чтобы поместить в Allow)
+                    allRules.filter {
+                        it.name.startsWith("FW:") &&
+                                (it.packages?.contains(packageName) == true) &&
+                                it.outbound == oppositeOutbound &&
+                                it.domains.isNotBlank()
+                    }.forEach { rule ->
+                        val currentDomains = rule.domains.split("\n").toMutableList()
+                        if (currentDomains.remove(newDomainEntry)) {
+                            rule.domains = currentDomains.joinToString("\n")
+                            if (rule.domains.isBlank()) {
+                                dao.deleteRule(rule) // Доменов не осталось, удаляем мусорное правило
+                            } else {
+                                rule.name = "FW: ${if(!allow) "✔" else "❌"} ${currentDomains.size} доменов ($appName)"
+                                dao.updateRule(rule)
+                            }
+                        }
+                    }
+                    // Добавляем домен в НУЖНОЕ правило
                     val existingRule = allRules.firstOrNull {
-                        it.packages.contains(packageName) &&
+                        it.name.startsWith("FW:") &&
+                                (it.packages?.contains(packageName) == true) &&
                                 it.outbound == targetOutbound &&
-                                it.name.startsWith("FW:") &&
                                 it.domains.isNotBlank() // Ищем именно доменные правила
                     }
 
-                    val newDomainEntry = "full:$domain"
 
                     if (existingRule != null) {
                         // ПРАВИЛО НАЙДЕНО: Дописываем домен

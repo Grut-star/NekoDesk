@@ -112,6 +112,7 @@ object DataStore : OnPreferenceDataStoreChangeListener {
     var keepLocalPortInVpn by configurationStore.boolean("keepLocalPortInVpn") { false } // false по умолчанию
     var usePhysicalMtu by configurationStore.boolean("use_physical_mtu") {true}
     var strictKillswitch by configurationStore.boolean("strict_killswitch") {false}
+    var firewallEnabled by configurationStore.boolean("firewall_enabled") { false }
     var speedInterval by configurationStore.stringToInt(Key.SPEED_INTERVAL)
     var showGroupInNotification by configurationStore.boolean("showGroupInNotification")
 

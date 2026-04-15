@@ -46,7 +46,7 @@ class VpnService : BaseVpnService(),
         DataStore.vpnService = this
 
         // --- ИНИЦИАЛИЗАЦИЯ БРАНДМАУЭРА ---
-        val isFirewallEnabled = DataStore.configurationStore.getBoolean("firewall_enabled", false)
+        val isFirewallEnabled = DataStore.firewallEnabled
 
         if (isFirewallEnabled) {
             val firewallCallback = FirewallCallbackImpl(this)

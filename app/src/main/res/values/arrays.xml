@@ -530,4 +530,105 @@
         <item>@string/sniff_override</item>
     </string-array>
 
+    <string-array name="adg_general_names">
+        <item>AdGuard Base Filter</item>
+        <item>AWAvenue Ads Rule</item>
+        <item>Dan Pollock\'s List</item>
+        <item>HaGeZi Normal</item>
+        <item>HaGeZi Pro</item>
+        <item>HaGeZi Ultimate</item>
+        <item>OISD Blocklist Big</item>
+        <item>Peter Lowe\'s Blocklist</item>
+        <item>ShadowWhisperer Tracking List</item>
+        <item>Steven Black\'s List</item>
+    </string-array>
+    <string-array name="adg_general_urls">
+        <item>https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_53.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_4.txt</item>
+        <item>https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/multi.txt</item>
+        <item>https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/pro.txt</item>
+        <item>https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/ultimate.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_27.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_3.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_69.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_33.txt</item>
+    </string-array>
+
+    <string-array name="adg_security_names">
+        <item>Phishing URL Blocklist (PhishTank and OpenPhish)</item>
+        <item>Dandelion Sprout\'s Anti-Malware List</item>
+        <item>HaGeZi\'s Badware Hoster Blocklist</item>
+        <item>HaGeZi\'s DNS Rebind Protection</item>
+        <item>HaGeZi\'s DynDNS Blocklist</item>
+        <item>HaGeZi\'s Encrypted DNS/VPN/TOR/Proxy Bypass</item>
+        <item>HaGeZi\'s The World\'s Most Abused TLDs</item>
+        <item>HaGeZi\'s Threat Intelligence Feeds (Very big)</item>
+        <item>HaGeZi\'s URL Shortener Blocklist</item>
+        <item>NoCoin Filter List</item>
+        <item>Phishing Army</item>
+        <item>Scam Blocklist by DurableNapkin</item>
+        <item>ShadowWhisperer\'s Malware List</item>
+        <item>Stalkerware Indicators List</item>
+        <item>The Big List of Hacked Malware Web Sites</item>
+        <item>uBlock₀ filters – Badware risks</item>
+        <item>Malicious URL Blocklist (URLHaus)</item>
+    </string-array>
+    <string-array name="adg_security_urls">
+        <item>https://malware-filter.gitlab.io/malware-filter/phishing-filter-agh.txt</item>
+        <item>https://raw.githubusercontent.com/DandelionSprout/adfilt/refs/heads/master/Dandelion%20Sprout%27s%20Anti-Malware%20List.txt</item>
+        <item>https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/hoster.txt</item>
+        <item>https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adguard/dns-rebind-protection.txt</item>
+        <item>https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/dyndns.txt</item>
+        <item>https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/doh-vpn-proxy-bypass.txt</item>
+        <item>https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/spam-tlds.txt</item>
+        <item>https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.txt</item>
+        <item>https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/urlshortener.txt</item>
+        <item>https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/refs/heads/master/nocoin.txt</item>
+        <item>https://phishing.army/download/phishing_army_blocklist_extended.txt</item>
+        <item>https://raw.githubusercontent.com/durablenapkin/scamblocklist/refs/heads/master/adguard.txt</item>
+        <item>https://raw.githubusercontent.com/ShadowWhisperer/BlockLists/refs/heads/master/RAW/Malware</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_31.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_9.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_50.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_11.txt</item>
+    </string-array>
+
+    <string-array name="adg_regional_names">
+        <item>RU AdList</item>
+        <item>Peter Lowe\'s List</item>
+        <item>Dandelion Sprout\'s Anti Push Notifications</item>
+        <item>Dandelion Sprout\'s Game Console Adblock List</item>
+        <item>HaGeZi\'s Allowlist Referral</item>
+        <item>HaGeZi\'s Anti-Piracy Blocklist</item>
+        <item>HaGeZi\'s Apple Tracker Blocklist</item>
+        <item>HaGeZi\'s Gambling Blocklist</item>
+        <item>HaGeZi\'s OPPO &amp; Realme Tracker Blocklist</item>
+        <item>HaGeZi\'s Samsung Tracker Blocklist</item>
+        <item>HaGeZi\'s Vivo Tracker Blocklist</item>
+        <item>HaGeZi\'s Windows/Office Tracker Blocklist</item>
+        <item>HaGeZi\'s Xiaomi Tracker Blocklist</item>
+        <item>No Google</item>
+        <item>Perflyst and Dandelion Sprout\'s Smart-TV Blocklist</item>
+        <item>ShadowWhisperer\'s Dating List</item>
+    </string-array>
+    <string-array name="adg_regional_urls">
+        <item>https://easylist-downloads.adblockplus.org/advblock.txt</item>
+        <item>https://pgl.yoyo.org/adservers/serverlist.php?hostformat=adblockplus&amp;showintro=0&amp;mimetype=plaintext</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_39.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_6.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_45.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_46.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_67.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_47.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_66.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_61.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_65.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_63.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_60.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_37.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_7.txt</item>
+        <item>https://adguardteam.github.io/HostlistsRegistry/assets/filter_57.txt</item>
+    </string-array>
+
 </resources>
